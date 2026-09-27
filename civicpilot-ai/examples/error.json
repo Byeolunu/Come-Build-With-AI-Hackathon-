@@ -1,0 +1,58 @@
+{
+  "status": "error",
+  "error": "LLM JSON failure: Error code: 429 - Rate limit reached (simulé)",
+  "language": "fr",
+  "user_profile": {
+    "personal": {
+      "age": null,
+      "country": null,
+      "region": null,
+      "city": null
+    },
+    "employment": {
+      "status": null,
+      "occupation": null
+    },
+    "goal": {
+      "type": null,
+      "sector": null,
+      "description": null,
+      "stage": null
+    },
+    "financial_need": {
+      "amount": null,
+      "currency": null,
+      "purpose": null
+    },
+    "business": {
+      "existing": null,
+      "has_business_plan": null,
+      "has_business_registration": null
+    },
+    "experience": {
+      "relevant_experience": null,
+      "skills": []
+    },
+    "eligibility": {
+      "student": null,
+      "low_income": null,
+      "disability": null,
+      "refugee": null,
+      "rural_resident": null
+    },
+    "constraints": {
+      "cannot_take_debt": null,
+      "other": []
+    },
+    "missing_information": []
+  },
+  "trace": {
+    "model_used": {
+      "extraction": null,
+      "answer": null
+    },
+    "pii_redacted": false,
+    "extract_shortcut": false,
+    "error_stage": "extraction"
+  }
+}

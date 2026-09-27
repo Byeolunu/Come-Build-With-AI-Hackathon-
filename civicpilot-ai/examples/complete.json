@@ -1,0 +1,278 @@
+{
+  "status": "complete",
+  "language": "fr",
+  "user_profile": {
+    "personal": {
+      "age": 27,
+      "country": "MA",
+      "region": null,
+      "city": "Casablanca"
+    },
+    "employment": {
+      "status": "unemployed",
+      "occupation": null
+    },
+    "goal": {
+      "type": "start_business",
+      "sector": "boulangerie",
+      "description": "Ouvrir une petite boulangerie",
+      "stage": "idea"
+    },
+    "financial_need": {
+      "amount": 3000.0,
+      "currency": "MAD",
+      "purpose": "Ouverture de la boulangerie"
+    },
+    "business": {
+      "existing": null,
+      "has_business_plan": null,
+      "has_business_registration": null
+    },
+    "experience": {
+      "relevant_experience": null,
+      "skills": []
+    },
+    "eligibility": {
+      "student": null,
+      "low_income": null,
+      "disability": null,
+      "refugee": null,
+      "rural_resident": null
+    },
+    "constraints": {
+      "cannot_take_debt": null,
+      "other": []
+    },
+    "missing_information": []
+  },
+  "programs": [
+    {
+      "id": "grant_a",
+      "name": "Subvention jeunes porteurs de projet (MOCK)",
+      "type": "grant",
+      "provider": "Organisme A",
+      "amount_range": "jusqu'à 5 000 MAD",
+      "match_status": "likely_match",
+      "matched_requirements": [
+        "Sans emploi",
+        "Projet de création d'activité"
+      ],
+      "missing_requirements": [
+        "Attestation de résidence"
+      ],
+      "failed_requirements": [],
+      "warnings": [
+        "Places limitées"
+      ],
+      "documents": [
+        "CIN",
+        "Attestation de résidence",
+        "Description du projet"
+      ],
+      "deadline": "À vérifier",
+      "contact": "Guichet local (MOCK)",
+      "sources": [
+        {
+          "url": "https://example.org/program-a",
+          "verified_on": "2026-09-27",
+          "excerpt": "Extrait officiel (MOCK)"
+        }
+      ]
+    },
+    {
+      "id": "train_c",
+      "name": "Formation entrepreneuriat (MOCK)",
+      "type": "training",
+      "provider": "Centre C",
+      "amount_range": "Gratuit",
+      "match_status": "likely_match",
+      "matched_requirements": [
+        "Tout public"
+      ],
+      "missing_requirements": [],
+      "failed_requirements": [],
+      "warnings": [],
+      "documents": [
+        "CIN"
+      ],
+      "deadline": "Session mensuelle",
+      "contact": "Centre C (MOCK)",
+      "sources": [
+        {
+          "url": "https://example.org/program-c",
+          "verified_on": "2026-09-27",
+          "excerpt": "Extrait officiel (MOCK)"
+        }
+      ]
+    },
+    {
+      "id": "micro_b",
+      "name": "Microcrédit création (MOCK)",
+      "type": "microcredit",
+      "provider": "Association B",
+      "amount_range": "1 000 – 50 000 MAD",
+      "match_status": "partial",
+      "matched_requirements": [
+        "Montant dans la fourchette"
+      ],
+      "missing_requirements": [
+        "Justificatif de revenus ou garant"
+      ],
+      "failed_requirements": [],
+      "warnings": [
+        "Remboursement mensuel avec intérêts"
+      ],
+      "documents": [
+        "CIN",
+        "Plan de financement simple"
+      ],
+      "deadline": "Continu",
+      "contact": "Agence B (MOCK)",
+      "sources": [
+        {
+          "url": "https://example.org/program-b",
+          "verified_on": "2026-09-27",
+          "excerpt": "Extrait officiel (MOCK)"
+        }
+      ]
+    }
+  ],
+  "final_response": {
+    "summary": "Deux programmes semblent correspondre à votre projet de boulangerie, et un microcrédit correspond partiellement. Tout reste à confirmer auprès des organismes.",
+    "recommendations": [
+      {
+        "program_id": "grant_a",
+        "match_label": "likely_match",
+        "why": "Vous êtes sans emploi et vous avez un projet de création d'activité.",
+        "missing": [
+          "Attestation de résidence"
+        ],
+        "risks": [
+          "Places limitées"
+        ],
+        "program_name": "Subvention jeunes porteurs de projet (MOCK)",
+        "type": "grant",
+        "sources": [
+          {
+            "url": "https://example.org/program-a",
+            "verified_on": "2026-09-27",
+            "excerpt": "Extrait officiel (MOCK)"
+          }
+        ]
+      },
+      {
+        "program_id": "train_c",
+        "match_label": "likely_match",
+        "why": "Formation ouverte à tout public, utile pour préparer le projet.",
+        "missing": [],
+        "risks": [],
+        "program_name": "Formation entrepreneuriat (MOCK)",
+        "type": "training",
+        "sources": [
+          {
+            "url": "https://example.org/program-c",
+            "verified_on": "2026-09-27",
+            "excerpt": "Extrait officiel (MOCK)"
+          }
+        ]
+      },
+      {
+        "program_id": "micro_b",
+        "match_label": "partial",
+        "why": "Le montant demandé (3000 MAD) est dans la fourchette du programme.",
+        "missing": [
+          "Justificatif de revenus ou garant"
+        ],
+        "risks": [
+          "Remboursement mensuel avec intérêts",
+          "Crédit : il faudra rembourser chaque mois, intérêts compris, même si l'activité ne rapporte pas encore."
+        ],
+        "program_name": "Microcrédit création (MOCK)",
+        "type": "microcredit",
+        "sources": [
+          {
+            "url": "https://example.org/program-b",
+            "verified_on": "2026-09-27",
+            "excerpt": "Extrait officiel (MOCK)"
+          }
+        ]
+      }
+    ],
+    "action_plan": [
+      {
+        "step": "S'inscrire à la prochaine session de formation entrepreneuriat.",
+        "program_id": "train_c",
+        "source_url": "https://example.org/program-c"
+      },
+      {
+        "step": "Demander une attestation de résidence.",
+        "program_id": "grant_a",
+        "source_url": null
+      },
+      {
+        "step": "Déposer le dossier de subvention au guichet local.",
+        "program_id": "grant_a",
+        "source_url": "https://example.org/program-a"
+      }
+    ],
+    "assumptions": [
+      "Le projet est au stade de l'idée (aucune activité déclarée)."
+    ],
+    "checklist": {
+      "programs": [
+        {
+          "program_id": "grant_a",
+          "program_name": "Subvention jeunes porteurs de projet (MOCK)",
+          "documents": [
+            "CIN",
+            "Attestation de résidence",
+            "Description du projet"
+          ],
+          "deadline": "À vérifier",
+          "contact": "Guichet local (MOCK)",
+          "source_url": "https://example.org/program-a"
+        },
+        {
+          "program_id": "train_c",
+          "program_name": "Formation entrepreneuriat (MOCK)",
+          "documents": [
+            "CIN"
+          ],
+          "deadline": "Session mensuelle",
+          "contact": "Centre C (MOCK)",
+          "source_url": "https://example.org/program-c"
+        },
+        {
+          "program_id": "micro_b",
+          "program_name": "Microcrédit création (MOCK)",
+          "documents": [
+            "CIN",
+            "Plan de financement simple"
+          ],
+          "deadline": "Continu",
+          "contact": "Agence B (MOCK)",
+          "source_url": "https://example.org/program-b"
+        }
+      ],
+      "all_documents": [
+        "CIN",
+        "Attestation de résidence",
+        "Description du projet",
+        "Plan de financement simple"
+      ]
+    },
+    "disclaimer": "CivicPilot donne une orientation, pas une décision officielle. Confirmez toujours l'éligibilité auprès de l'organisme concerné."
+  },
+  "trace": {
+    "model_used": {
+      "extraction": "llm-simulé (exemple)",
+      "answer": "llm-simulé (exemple)"
+    },
+    "pii_redacted": false,
+    "extract_shortcut": false,
+    "extract_ms": 0,
+    "retrieval_ms": 0,
+    "llm_fallback_used": false,
+    "answer_ms": 0
+  }
+}

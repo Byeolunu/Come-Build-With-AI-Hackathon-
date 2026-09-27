@@ -1,0 +1,61 @@
+{
+  "status": "needs_info",
+  "language": "fr",
+  "user_profile": {
+    "personal": {
+      "age": null,
+      "country": "MA",
+      "region": null,
+      "city": null
+    },
+    "employment": {
+      "status": "unemployed",
+      "occupation": null
+    },
+    "goal": {
+      "type": "start_business",
+      "sector": "boulangerie",
+      "description": "Ouvrir une petite boulangerie",
+      "stage": "idea"
+    },
+    "financial_need": {
+      "amount": 3000.0,
+      "currency": "MAD",
+      "purpose": "Ouverture de la boulangerie"
+    },
+    "business": {
+      "existing": null,
+      "has_business_plan": null,
+      "has_business_registration": null
+    },
+    "experience": {
+      "relevant_experience": null,
+      "skills": []
+    },
+    "eligibility": {
+      "student": null,
+      "low_income": null,
+      "disability": null,
+      "refugee": null,
+      "rural_resident": null
+    },
+    "constraints": {
+      "cannot_take_debt": null,
+      "other": []
+    },
+    "missing_information": [
+      "personal.city",
+      "personal.age"
+    ]
+  },
+  "question": "Dans quelle ville habitez-vous ?",
+  "trace": {
+    "model_used": {
+      "extraction": "llm-simulé (exemple)",
+      "answer": null
+    },
+    "pii_redacted": false,
+    "extract_shortcut": false,
+    "extract_ms": 0
+  }
+}
