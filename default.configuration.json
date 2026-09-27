@@ -1,0 +1,27 @@
+{
+  "llm": {
+    "type": "openai",
+    "name": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "baseUrl": "https://integrate.api.nvidia.com/v1",
+    "temperature": 1,
+    "topP": 0.95,
+    "maxTokens": 2048,
+    "enableThinking": false,
+    "reasoningBudget": null
+  },
+  "embeddings": {
+    "type": "openai",
+    "name": "nvidia/nemotron-3-embed-1b",
+    "baseUrl": "https://integrate.api.nvidia.com/v1"
+  },
+  "vectorStore": {
+    "dbName": "come_build_with_ai",
+    "collectionName": "Hackathons",
+    "indexName": "civicpilot_vector_index",
+    "relevanceScoreFn": "cosine",
+    "embeddingKey": "embedding",
+    "textKey": "text",
+    "maxDocumentsToRetrieve": 4,
+    "minScoreDistance": 0.5
+  }
+}
