@@ -9,6 +9,8 @@ from pythonjsonlogger import jsonlogger
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
     def process_log_record(self, log_record):
+        # Remove taskName if present (added in Python 3.12+ asyncio logging)
+        log_record.pop("taskName", None)
         # Rename levelno to level
         log_record["level"] = log_record.pop("levelno")
         # Rename message to msg
