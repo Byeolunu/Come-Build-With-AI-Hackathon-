@@ -1,6 +1,697 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CivicPilot</title>
-<style>
-:root{--navy:#16233b;--blue:#2563eb;--pale:#f5f7fb;--line:#e4e9f2;--muted:#718096;--gold:#fff7df}*{box-sizing:border-box}body{margin:0;background:var(--pale);color:#172033;font:14px Inter,system-ui,Arial}.app{height:100vh;display:grid;grid-template-columns:250px minmax(420px,760px) 290px;max-width:1440px;margin:auto;background:#fff}aside,.right{padding:24px 18px;background:#fbfcfe}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;color:var(--navy)}.logo{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#2563eb,#6d5dfc);display:grid;place-items:center;color:#fff;font-weight:900}.tag{color:var(--muted);font-size:12px;line-height:1.5;margin:8px 0 28px}.new{width:100%;border:1px solid #d5ddeb;background:#fff;color:var(--navy);border-radius:9px;padding:10px;cursor:pointer;font-weight:600}.side-title{text-transform:uppercase;letter-spacing:.08em;font-size:10px;color:#9aa5b5;font-weight:700;margin-top:34px}.source-note,.panel{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;line-height:1.5;color:#5b6575;font-size:12px}.source-note strong{display:block;color:var(--navy);margin-bottom:4px}main{display:flex;flex-direction:column;min-width:0}.topbar{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px}.title{font-weight:750;color:var(--navy);font-size:16px}.online{font-size:12px;color:#27a269;display:flex;gap:6px;align-items:center}.dot{width:7px;height:7px;border-radius:50%;background:#2eb875}.messages{flex:1;overflow:auto;padding:28px 26px}.welcome{text-align:center;color:var(--muted);padding:28px 10px}.welcome h1{color:var(--navy);font-size:24px;margin:10px 0}.welcome p{max-width:480px;margin:auto;line-height:1.5}.chips{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:18px}.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:8px 12px;color:#536174;cursor:pointer}.msg{display:flex;gap:10px;margin:18px 0;align-items:flex-start}.msg.user{flex-direction:row-reverse}.avatar{width:30px;height:30px;flex:0 0 30px;border-radius:10px;display:grid;place-items:center;color:#fff;background:var(--blue);font-size:12px;font-weight:bold}.assistant .avatar{background:var(--navy)}.bubble{max-width:82%;padding:13px 15px;border-radius:15px;line-height:1.55;white-space:pre-wrap}.user .bubble{background:var(--blue);color:#fff;border-top-right-radius:4px}.assistant .bubble{background:#f1f4f9;color:#253149;border-top-left-radius:4px}.typing{color:var(--muted);font-style:italic}.composer{border-top:1px solid var(--line);padding:16px 22px}.compose-row{display:flex;gap:10px;border:1px solid #d5ddeb;border-radius:13px;padding:8px}.compose-row:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb18}textarea{resize:none;border:0;outline:0;flex:1;font:inherit;min-height:42px;max-height:130px;padding:8px}.send{border:0;border-radius:9px;background:var(--blue);color:#fff;padding:0 18px;font-weight:700;cursor:pointer}.send:disabled{opacity:.5}.hint{text-align:center;color:#9aa5b5;font-size:11px;margin-top:8px}.right{border-left:1px solid var(--line);overflow:auto}.right h3{margin:0 0 10px;color:var(--navy);font-size:14px}.question{padding:10px 11px;border-radius:9px;background:var(--gold);border-left:3px solid #efb52d;margin:8px 0;line-height:1.4;cursor:pointer}.question:hover{background:#fff0bd}.empty{color:var(--muted);font-size:12px;line-height:1.5}.profile{font:11px monospace;white-space:pre-wrap;overflow:auto;max-height:300px;color:#526078}.refs a{display:block;color:var(--blue);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:8px 0;text-decoration:none}@media(max-width:1050px){.app{grid-template-columns:220px minmax(420px,1fr)}.right{display:none}}@media(max-width:650px){.app{display:block;height:100vh}aside{display:none}.topbar{padding:0 16px}.messages{padding:18px 14px}.composer{padding:12px}.bubble{max-width:88%}}
-</style></head><body><div class="app"><aside><div class="brand"><div class="logo">C</div>CivicPilot</div><div class="tag">Find verified support for work, training, savings and small business.</div><button class="new" onclick="newChat()">＋ New conversation</button><div class="side-title">Knowledge base</div><div class="source-note"><strong>Verified sources</strong>Programs are retrieved from your MongoDB Atlas knowledge base and shown with official links.</div><div class="source-note"><strong>Languages</strong>English · Français · العربية</div></aside><main><div class="topbar"><div><div class="title">Opportunity assistant</div><div class="tag" style="margin:3px 0 0">Profile-aware recommendations</div></div><div class="online"><span class="dot"></span>Ready</div></div><section id="messages" class="messages"><div id="welcome" class="welcome"><div class="logo" style="margin:auto">C</div><h1>How can I help you today?</h1><p>Describe your situation, goal, and amount. I’ll ask for missing details before comparing verified programs.</p><div class="chips"><button class="chip" onclick="suggest('I am unemployed and want to start a small bakery in Casablanca with 30,000 MAD')">Start a business</button><button class="chip" onclick="suggest('I need training to improve my employment opportunities')">Find training</button><button class="chip" onclick="suggest('I want a grant and cannot take a loan')">Find a grant</button></div></div></section><div class="composer"><div class="compose-row"><textarea id="query" rows="1" placeholder="Describe your situation…" onkeydown="keySend(event)" oninput="resize(this)"></textarea><button id="send" class="send" onclick="send()">Send</button></div><div class="hint">Always verify requirements with the official source.</div></div></main><section class="right"><div class="panel"><h3>Missing information</h3><div id="questions" class="empty">Questions appear here when your profile needs more details.</div></div><div class="panel"><h3>Your profile</h3><div id="profile" class="empty">Your extracted profile appears here.</div></div><div class="panel"><h3>Sources used</h3><div id="refs" class="empty">Sources appear with the answer.</div></div></section></div><script>
-let sessionId=localStorage.getItem('civicpilot-session')||crypto.randomUUID();localStorage.setItem('civicpilot-session',sessionId);const $=id=>document.getElementById(id);function resize(e){e.style.height='auto';e.style.height=Math.min(e.scrollHeight,130)+'px'}function keySend(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}function suggest(t){$('query').value=t;resize($('query'));$('query').focus()}function addMessage(t,w){$('welcome')?.remove();const r=document.createElement('div');r.className='msg '+w;const a=document.createElement('div');a.className='avatar';a.textContent=w==='user'?'You':'C';const b=document.createElement('div');b.className='bubble';b.textContent=t;r.append(a,b);$('messages').append(r);$('messages').scrollTop=$('messages').scrollHeight}function useQuestion(q){suggest(q+' ')}function render(d){$('profile').textContent=d.profile?JSON.stringify(d.profile,null,2):'No profile extracted yet.';const q=d.missing_questions||[];$('questions').innerHTML=q.length?q.map(x=>`<div class="question" onclick="useQuestion(${JSON.stringify(x)})">${x}</div>`).join(''):'<div class="empty">No missing questions.</div>';const refs=d.references||[];$('refs').innerHTML=refs.length?refs.map(x=>x.url?`<a href="${x.url}" target="_blank">${x.url}</a>`:'').join(''):'<div class="empty">No sources returned.</div>'}async function send(){const t=$('query').value.trim();if(!t)return;addMessage(t,'user');$('query').value='';resize($('query'));$('send').disabled=true;const r=document.createElement('div');r.className='msg assistant';r.innerHTML='<div class="avatar">C</div><div class="bubble typing">Thinking…</div>';$('messages').append(r);try{const x=await fetch('/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sessionId,chat_query:t,chat_history:[]})});const d=await x.json();r.remove();if(!x.ok)throw Error(d.detail||'Request failed');addMessage(d.message||'No response returned.','assistant');render(d)}catch(e){r.remove();addMessage('I could not reach the assistant: '+e.message,'assistant')}finally{$('send').disabled=false;$('query').focus()}}function newChat(){sessionId=crypto.randomUUID();localStorage.setItem('civicpilot-session',sessionId);location.reload()}
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPilot - AI Opportunity Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --panel-bg: rgba(15, 15, 20, 0.7);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+        }
+
+        /* Ambient Background Glows */
+        .glow-1, .glow-2, .glow-3 {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.4;
+        }
+        .glow-1 {
+            top: -10%; left: -10%; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, var(--primary), transparent 70%);
+        }
+        .glow-2 {
+            bottom: -20%; right: -10%; width: 60vw; height: 60vw;
+            background: radial-gradient(circle, var(--secondary), transparent 70%);
+        }
+        .glow-3 {
+            top: 40%; left: 30%; width: 30vw; height: 30vw;
+            background: radial-gradient(circle, var(--accent), transparent 70%);
+            opacity: 0.2;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            padding: 2rem;
+            gap: 2rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Website Side */
+        .website-side {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem 4rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .brand span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: grid;
+            place-items: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4.5rem;
+            line-height: 1.1;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Chatbot Side */
+        .chat-side {
+            flex: 0.8;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+            animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .chat-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 0.2rem;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .messages::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        .welcome-msg {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-msg h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-msg p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .suggestion-btn {
+            background: var(--glass-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .msg-container {
+            display: flex;
+            gap: 1rem;
+            max-width: 90%;
+            animation: msgIn 0.3s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes msgIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-container.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .user .avatar {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .bot .avatar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .bubble {
+            padding: 1rem 1.2rem;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .user .bubble {
+            background: var(--primary);
+            border-top-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .bot .bubble {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-top-left-radius: 4px;
+        }
+
+        /* Markdown rendered inside bot bubbles */
+        .bot .bubble h1, .bot .bubble h2, .bot .bubble h3 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            margin: 0.8rem 0 0.4rem;
+            color: #fff;
+            font-size: 1rem;
+        }
+        .bot .bubble h3 { font-size: 0.95rem; color: #c4b5fd; }
+        .bot .bubble p { margin: 0.4rem 0; }
+        .bot .bubble ul, .bot .bubble ol { padding-left: 1.2rem; margin: 0.4rem 0; }
+        .bot .bubble li { margin: 0.25rem 0; line-height: 1.5; }
+        .bot .bubble strong { color: #e2e8f0; }
+        .bot .bubble em { color: var(--text-muted); font-style: italic; }
+        .bot .bubble a { color: var(--secondary); text-decoration: none; }
+        .bot .bubble a:hover { text-decoration: underline; }
+        .bot .bubble hr { border: none; border-top: 1px solid var(--glass-border); margin: 0.75rem 0; }
+        .bot .bubble code { background: rgba(255,255,255,0.07); padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+        .bot .bubble blockquote { border-left: 3px solid var(--primary); padding-left: 0.75rem; color: var(--text-muted); margin: 0.5rem 0; }
+
+        /* Profile & Context Panel (hidden by default, expands within bot message) */
+        .bot-context {
+            margin-top: 10px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .bot-context strong { color: #fff; display: block; margin-bottom: 4px;}
+        .bot-context a { color: var(--secondary); text-decoration: none; }
+        .bot-context a:hover { text-decoration: underline; }
+
+        .chat-input {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(0,0,0,0.1);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            background: var(--glass-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 8px 8px 20px;
+            border-radius: 24px;
+            align-items: center;
+            transition: border-color 0.3s;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: none;
+            outline: none;
+            max-height: 120px;
+            height: 24px;
+            line-height: 24px;
+        }
+
+        textarea::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px 0;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @media (max-width: 1024px) {
+            .container { flex-direction: column; overflow-y: auto; padding: 1rem; }
+            body { overflow: auto; }
+            .website-side { flex: none; padding: 2rem 1rem; text-align: center; }
+            .brand { justify-content: center; }
+            .hero p { margin: 0 auto 3rem auto; }
+            .chat-side { flex: none; height: 80vh; margin-bottom: 2rem; }
+        }
+        @media (max-width: 600px) {
+            .features { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+    <div class="glow-3"></div>
+
+    <div class="container">
+        <!-- Website Landing Side -->
+        <main class="website-side">
+            <div class="brand">
+                <div class="logo-icon">C</div>
+                <span>CivicPilot</span>
+            </div>
+            
+            <div class="hero">
+                <h1>Empowering your<br>opportunities.</h1>
+                <p>Find verified support for work, training, savings and small business. Connect with the best civic resources tailored specifically for your profile through an intelligent conversation.</p>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <h3>🎯 Tailored Matching</h3>
+                    <p>Our AI analyzes your profile instantly to find grants and opportunities that fit your exact situation.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 Verified Sources</h3>
+                    <p>All programs are retrieved from trusted knowledge bases and shown with official direct links.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌍 Multi-Language</h3>
+                    <p>Support for English, Français, and العربية to help you in the language you are most comfortable with.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Real-Time Guidance</h3>
+                    <p>Get immediate clarification on eligibility and requirements without navigating complex websites.</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Chatbot Interface Side -->
+        <aside class="chat-side">
+            <header class="chat-header">
+                <div class="chat-title">
+                    Opportunity Assistant
+                    <span class="chat-subtitle">Profile-aware recommendations</span>
+                </div>
+                <div class="status">
+                    <div class="status-dot"></div>
+                    Online
+                </div>
+            </header>
+
+            <div class="messages" id="messages">
+                <div class="welcome-msg" id="welcome">
+                    <h2>How can I help?</h2>
+                    <p>Describe your situation, goal, and amount. I'll ask for missing details before comparing verified programs.</p>
+                    
+                    <div class="suggestions">
+                        <button class="suggestion-btn" onclick="suggest('I am unemployed and want to start a bakery in Casablanca with 30,000 MAD')">Start a business</button>
+                        <button class="suggestion-btn" onclick="suggest('I need training to improve my employment opportunities')">Find training</button>
+                        <button class="suggestion-btn" onclick="suggest('I want a grant and cannot take a loan')">Find a grant</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input">
+                <div class="input-wrapper">
+                    <textarea id="query" placeholder="Type your message here..." onkeydown="keySend(event)" oninput="resize(this)"></textarea>
+                    <button class="send-btn" id="send" onclick="send()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        let sessionId = localStorage.getItem('civicpilot-session') || crypto.randomUUID();
+        localStorage.setItem('civicpilot-session', sessionId);
+        
+        const $ = id => document.getElementById(id);
+        const msgs = $('messages');
+        const query = $('query');
+        const sendBtn = $('send');
+
+        function resize(e) {
+            e.style.height = '24px';
+            e.style.height = Math.min(e.scrollHeight, 120) + 'px';
+        }
+
+        function keySend(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                send();
+            }
+        }
+
+        function suggest(t) {
+            query.value = t;
+            resize(query);
+            query.focus();
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                msgs.scrollTop = msgs.scrollHeight;
+            }, 50);
+        }
+
+        function appendMessage(isUser, content, extraHTML = '') {
+            $('welcome')?.remove();
+            
+            const div = document.createElement('div');
+            div.className = `msg-container ${isUser ? 'user' : 'bot'}`;
+            
+            const avatar = isUser ? 'U' : 'C';
+            
+            div.innerHTML = `
+                <div class="avatar">${avatar}</div>
+                <div class="bubble">
+                    ${content}
+                    ${extraHTML}
+                </div>
+            `;
+            
+            msgs.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function showTyping() {
+            const div = document.createElement('div');
+            div.className = 'msg-container bot typing-msg';
+            div.innerHTML = `
+                <div class="avatar">C</div>
+                <div class="bubble">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            msgs.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function generateContextHTML(data) {
+            let html = '';
+            
+            if (data.missing_questions && data.missing_questions.length > 0) {
+                html += `<div class="bot-context"><strong>Missing Information:</strong><ul>`;
+                data.missing_questions.forEach(q => {
+                    html += `<li><a href="#" onclick="suggest('${q.replace(/'/g, "\\'")}'); return false;">${q}</a></li>`;
+                });
+                html += `</ul></div>`;
+            }
+            
+            if (data.references && data.references.length > 0) {
+                html += `<div class="bot-context"><strong>Sources:</strong><ul>`;
+                data.references.forEach(r => {
+                    if (r.url) {
+                        html += `<li><a href="${r.url}" target="_blank">${new URL(r.url).hostname}</a></li>`;
+                    }
+                });
+                html += `</ul></div>`;
+            }
+            
+            return html;
+        }
+
+        async function send() {
+            const t = query.value.trim();
+            if (!t) return;
+            
+            appendMessage(true, t);
+            query.value = '';
+            resize(query);
+            sendBtn.disabled = true;
+            
+            const typingMsg = showTyping();
+            
+            try {
+                const res = await fetch('/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId, chat_query: t, chat_history: [] })
+                });
+                
+                const data = await res.json();
+                typingMsg.remove();
+                
+                if (!res.ok) throw Error(data.detail || 'Request failed');
+                
+                const extraHTML = generateContextHTML(data);
+                const rawText = data.message || 'No response returned.';
+                // Parse markdown so **bold**, ### headers, and - bullets render properly
+                const renderedContent = marked.parse(rawText);
+                appendMessage(false, renderedContent, extraHTML);
+                
+            } catch (e) {
+                typingMsg.remove();
+                appendMessage(false, 'I could not reach the server: ' + e.message);
+            } finally {
+                sendBtn.disabled = false;
+                query.focus();
+            }
+        }
+    </script>
+</body>
+</html>

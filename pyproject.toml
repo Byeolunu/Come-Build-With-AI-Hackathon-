@@ -40,6 +40,7 @@ dependencies = [
     "urllib3==2.6.3",
     "virtualenv==20.29.1",
     "uvicorn==0.40.0",
+    "certifi>=2025.11.12",
 ]
 
 [build-system]

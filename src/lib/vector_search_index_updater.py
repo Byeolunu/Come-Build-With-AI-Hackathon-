@@ -1,4 +1,5 @@
 from logging import Logger
+import certifi
 
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -29,7 +30,7 @@ class VectorSearchIndexUpdater:
         collection_name = self.app_context.configurations.vectorStore.collectionName
 
         try:
-            client = MongoClient(mongo_cluster_uri)
+            client = MongoClient(mongo_cluster_uri, tlsCAFile=certifi.where())
             # Use the configured database explicitly. Atlas URIs often omit a
             # default database, which makes get_database() fail.
             db = client[db_name]

@@ -1,22 +1,15 @@
-# ai-rag-template
+# CivicPilot
 
-[![Python
-version](https://img.shields.io/badge/python-v3.12.3-blue)](.coverage/html/index.html)
-[![FastAPI
-version](https://img.shields.io/badge/fastapi-v0.115.6-blue)](.coverage/html/index.html)
+[![Python version](https://img.shields.io/badge/python-v3.12.3-blue)](.coverage/html/index.html)
+[![FastAPI version](https://img.shields.io/badge/fastapi-v0.115.6-blue)](.coverage/html/index.html)
 
 ---
 
-> **NOTE**
->
-> Before the milestone v1.0.0, consider this codebase as in _active development_. This means that the latest version in the _main_ branch
-> might include updates and breaking changes that might not work with previously released versions.
-> If you intend to use the application, please use one of the releases generated and refer to the _README.md_ file of the tag with the same name.
+**CivicPilot** is an AI Opportunity Assistant built to connect individuals with verified support for work, training, savings, and small businesses. 
+This repository contains the backend and frontend code for the intelligent platform, providing a modern user interface and a RAG (Retrieval Augmented Generation) backend to match users' profiles to civic opportunities.
 
-`ai-rag-template` is a template meant to be a based for the implementation of a RAG (retrieval augmented generation) system.
-This repository contains the backend code, which consists of a web server that provides REST APIs to primarily support one type of operation:
-
-- **Chat**: Provides a conversation feature, allowing users to ask questions and get responses from the chatbot.
+- **Intelligent Assistant**: Provides a conversation feature, allowing users to ask questions, share their situation, and get profile-aware recommendations from the chatbot.
+- **Beautiful UI**: An integrated premium dark-mode web application providing an immersive user experience.
 
 The backend was developed using the [LangChain](https://python.langchain.com/docs/get_started/introduction/) framework, which enables creating sequences of complex interactions using Large Language Models. The web server was implemented using the [FastAPI](https://fastapi.tiangolo.com/) framework.
 

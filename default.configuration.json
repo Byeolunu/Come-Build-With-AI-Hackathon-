@@ -3,8 +3,8 @@
     "type": "openai",
     "name": "nvidia/nemotron-3.5-lightning-30b-a3b",
     "baseUrl": "https://integrate.api.nvidia.com/v1",
-    "temperature": 1,
-    "topP": 0.95,
+    "temperature": 0.3,
+    "topP": 0.9,
     "maxTokens": 2048,
     "enableThinking": false,
     "reasoningBudget": null
@@ -21,7 +21,14 @@
     "relevanceScoreFn": "cosine",
     "embeddingKey": "embedding",
     "textKey": "text",
-    "maxDocumentsToRetrieve": 4,
-    "minScoreDistance": 0.5
+    "maxDocumentsToRetrieve": 8,
+    "minScoreDistance": 0.35
+  },
+  "tokenizer": {
+    "name": "gpt-3.5-turbo"
+  },
+  "chain": {
+    "aggregateMaxTokenNumber": 3500,
+    "rag": {}
   }
 }

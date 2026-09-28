@@ -139,7 +139,7 @@ class VectorStore(BaseModel):
         ..., description='The key used to store text data in the vector store.'
     )
     maxDocumentsToRetrieve: int | None = Field(
-        4,
+        8,
         description='The maximum number of documents to be retrieved from the vector store.',
     )
     maxScoreDistance: float | None = Field(
@@ -165,7 +165,7 @@ class Rag(BaseModel):
 
 class Chain(BaseModel):
     aggregateMaxTokenNumber: int | None = Field(
-        2000,
+        3500,
         description='The maximum number of tokens to be used for aggregation of multiple responses from different services.',
     )
     rag: Rag | None = Field(None, description='RAG chain configuration')
@@ -179,5 +179,5 @@ class RagTemplateConfigSchema(BaseModel):
     embeddings: AzureEmbeddingsConfiguration | OpenAIEmbeddingsConfiguration
     vectorStore: VectorStore
     chain: Chain | None = Field(
-        default_factory=lambda: Chain.model_validate({'aggregateMaxTokenNumber': 2000})
+        default_factory=lambda: Chain.model_validate({'aggregateMaxTokenNumber': 3500})
     )

@@ -159,10 +159,24 @@ class AssistantService:
         if profile:
             country = profile.personal.get("country") or "unknown"
             region = profile.personal.get("region") or "unknown"
+            amount = profile.financial_need.get("amount")
+            currency = profile.financial_need.get("currency") or ""
+            sector = profile.goal.get("sector") or ""
+            goal_type = profile.goal.get("type") or ""
+            cannot_take_debt = profile.constraints.get("cannot_take_debt")
+            debt_pref = (
+                "grant or non-repayable support"
+                if cannot_take_debt
+                else ("loan or guarantee acceptable" if cannot_take_debt is False else "loan or grant")
+            )
+            amount_str = f"{amount:,.0f} {currency}" if amount else "unspecified"
             retrieval_query = (
-                f"User country: {country}. User region: {region}. "
-                "Retrieve opportunities and evaluate their stated geographic eligibility for this user; "
-                "do not assume a program is eligible or ineligible based only on the organization's country. "
+                f"Funding support programs for {country} {region}. "
+                f"Sector: {sector}. Goal: {goal_type}. "
+                f"Amount needed: {amount_str}. Financing preference: {debt_pref}. "
+                f"Programs: micro-enterprise SME entrepreneur startup auto-entrepreneur "
+                f"honor loan guarantee grant financement aide subvention pret "
+                f"Maroc Morocco {country} {region} small business individual support. "
                 f"User request: {query}"
             )
         with get_openai_callback() as openai_callback:

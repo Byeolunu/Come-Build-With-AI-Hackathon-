@@ -22,7 +22,7 @@ class ChatbotClient:
                 "chat_history": chat_history
             },
             headers={"Accept": "application/json"},
-            timeout=10
+            timeout=60
         )
         if response.status_code == 200:
             return response.json()

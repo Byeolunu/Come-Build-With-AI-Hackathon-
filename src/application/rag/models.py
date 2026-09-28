@@ -33,7 +33,7 @@ class ProgramStatus(StrEnum):
 class UserProfile(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    personal: dict[str, Any] = Field(default_factory=lambda: {"age": None, "country": None, "region": None, "city": None})
+    personal: dict[str, Any] = Field(default_factory=lambda: {"age": None, "gender": None, "country": None, "region": None, "city": None})
     employment: dict[str, Any] = Field(default_factory=lambda: {"status": None, "occupation": None})
     goal: dict[str, Any] = Field(default_factory=lambda: {"type": None, "sector": None, "description": None, "stage": None})
     financial_need: dict[str, Any] = Field(default_factory=lambda: {"amount": None, "currency": None, "purpose": None})
