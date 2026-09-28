@@ -1,7 +1,7 @@
 [project]
-name = "ai-rag-template"
+name = "CivicPilot"
 version = "0.6.0"
-description = "RAG template for AI applications"
+description = "CivicPilot is an AI Opportunity Assistant built to connect individuals with verified support for work, training, savings, and small businesses"
 requires-python = ">=3.11,<3.14"
 dependencies = [
     "aiohttp==3.13.3",
@@ -52,7 +52,7 @@ packages = ["src"]
 
 [tool.uv]
 dev-dependencies = [
-    "bandit==1.8.0",
+    "bandit>=1.7.5",
     "coverage==7.5.0",
     "genbadge==1.1.1",
     "httpretty==1.1.4",
