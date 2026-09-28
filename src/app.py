@@ -32,6 +32,7 @@ def create_app(context: AppContext) -> FastAPI:
     app.include_router(chat_completions_handler.router)
     app.include_router(embeddings_handler.router)
 
+    @app.get("/", include_in_schema=False)
     @app.get("/ui", include_in_schema=False)
     def civicpilot_ui():
         return FileResponse("src/ui/index.html")
