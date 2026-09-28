@@ -210,7 +210,7 @@ The `/-/metrics` endpoint exposes the metrics collected by Prometheus.
 
 ## High Level Architecture
 
-The following is the high-level architecture of ai-rag-template.
+The following is the high-level architecture of CivicPilot.
 
 ```mermaid
 flowchart LR
@@ -511,11 +511,11 @@ If you prefer Docker...
 - Build your image
 
 ```sh
-docker build . -t ai-rag-template
+docker build . -t CivicPilot
 ```
 
 - Run the web server
 
 ```sh
-docker run --env-file ./local.env -p 3000:3000 -d ai-rag-template
+docker run --env-file ./local.env -p 3000:3000 -d CivicPilot
 ```

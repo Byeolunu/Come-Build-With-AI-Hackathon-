@@ -14,10 +14,10 @@ ADD  . /app
 RUN uv sync --frozen --no-cache
 
 ARG COMMIT_SHA=<not-specified>
-RUN echo "ai-rag-template: $COMMIT_SHA" >> ./commit.sha
+RUN echo "CivicPilot: $COMMIT_SHA" >> ./commit.sha
 
 LABEL maintainer="%CUSTOM_PLUGIN_CREATOR_USERNAME%" \
-      name="ai-rag-template" \
+      name="CivicPilot" \
       description="%CUSTOM_PLUGIN_SERVICE_DESCRIPTION%" \
       eu.mia-platform.url="https://www.mia-platform.eu" \
       eu.mia-platform.version="0.6.0"

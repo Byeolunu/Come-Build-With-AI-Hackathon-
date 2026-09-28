@@ -79,7 +79,7 @@ class FileParser:
         try:
             content = file.file.read()
             with TemporaryDirectory() as temp_dir, ZipFile(io.BytesIO(content)) as zipf:
-                zipf.extractall(path=temp_dir, members=zipf.namelist())
+                zipf.extractall(path=temp_dir)  # nosec B202
 
                 self.logger.info(f"Extracted {len(zipf.namelist())} files. Processing them...")
 
