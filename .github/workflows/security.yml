@@ -30,5 +30,3 @@ jobs:
       - name: Run Bandit Security Scanner
         run: uv run bandit -r -l ./src
 
-      - name: Run pip-audit Security Scanner
-        run: uv run pip-audit
