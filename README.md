@@ -1,3 +1,13 @@
+---
+title: CivicPilot
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 3000
+pinned: false
+---
+
 # CivicPilot
 
 [![Python version](https://img.shields.io/badge/python-v3.12.3-blue)](.coverage/html/index.html)
