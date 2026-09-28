@@ -28,7 +28,7 @@ def evaluate_requirement(
     actual = _lookup(profile, path)
     if actual is None:
         status = RequirementStatus.MISSING
-    elif isinstance(expected, tuple) and len(expected) == 2:
+    elif isinstance(expected, tuple) and len(expected) == 2:  # noqa: PLR2004
         status = RequirementStatus.MATCHED if expected[0] <= actual <= expected[1] else RequirementStatus.NOT_MATCHED
     elif isinstance(expected, (list, set)):
         status = RequirementStatus.MATCHED if actual in expected else RequirementStatus.NOT_MATCHED

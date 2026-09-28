@@ -12,6 +12,7 @@ from src.context import AppContext
 
 # Domains that host Moroccan programs — docs from these should be prioritized
 # for Moroccan users over generic EU/international sources.
+COUNTRY_CODE_LENGTH = 2
 COUNTRY_DOMAIN_MAP = {
     "MA": ["marocpme.gov.ma", "finances.gov.ma", "tamwilcom.ma", "maroc.ma", "cri.ma"],
     "TN": ["tunisie.gov.tn", "startup.gov.tn"],
@@ -108,7 +109,7 @@ class RetrieverChain(Chain):
             if idx != -1:
                 snippet = query_lower[idx + len(marker):].strip()
                 candidate = snippet.split()[0].rstrip(".,;")
-                if len(candidate) == 2:
+                if len(candidate) == COUNTRY_CODE_LENGTH:
                     return candidate.upper()
 
         # Try old format: "User country: MA."
@@ -117,7 +118,7 @@ class RetrieverChain(Chain):
             if idx != -1:
                 snippet = query_lower[idx + len(marker):].strip()
                 candidate = snippet.split()[0].rstrip(".,;")
-                if len(candidate) == 2:
+                if len(candidate) == COUNTRY_CODE_LENGTH:
                     return candidate.upper()
 
         return None

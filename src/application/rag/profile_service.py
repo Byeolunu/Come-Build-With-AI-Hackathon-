@@ -141,7 +141,7 @@ def extract_profile(message: str) -> UserProfile:  # noqa: PLR0912, PLR0915
         age_match = re.search(pattern, text)
         if age_match:
             age = int(age_match.group(1))
-            if 14 <= age <= 99:  # reasonable age range
+            if 14 <= age <= 99:  # reasonable age range  # noqa: PLR2004
                 profile.personal["age"] = age
                 break
 

@@ -40,4 +40,4 @@ def test_sensitive_values_are_not_inferred():
     refugee = evaluate_requirement(profile, path="eligibility.refugee", requirement="Applicant must be a refugee.", expected=True)
 
     assert low_income.status == RequirementStatus.MISSING
-    assert refugee.status == RequirementStatus.MISSING
+    assert refugee.status == RequirementStatus.MISSING
