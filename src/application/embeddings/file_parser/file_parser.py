@@ -45,7 +45,7 @@ class FileParser:
         self.logger = logger
 
     def _convert_bytes_to_str(self, content: bytes) -> str:
-        return content.decode("utf-8")
+        return content.decode("utf-8").replace("\r\n", "\n")
 
     def _convert_text_to_str(self, file: UploadFile = File(...)) -> str:
         self.logger.debug(f"Converting text file {file.filename} to string...")
@@ -97,12 +97,18 @@ class FileParser:
             # pylint: disable=W0719
             raise Exception(f"An error occurred while extracting the file {file.filename}") from ex
 
+    def _extractall_tar(self, tarf: tarfile.TarFile, path: str):
+        if hasattr(tarfile, "data_filter"):
+            tarf.extractall(path=path, filter="data")
+        else:
+            tarf.extractall(path=path)
+
     def _extract_documents_from_tar_file(self, file: UploadFile = File(...)) -> Generator[str, None, None]:
         self.logger.debug(f"Extracting files from tar file {file.filename}")
         try:
             content = file.file.read()
             with TemporaryDirectory() as temp_dir, tarfile.open(fileobj=io.BytesIO(content)) as tarf:
-                tarf.extractall(path=temp_dir, filter="data")
+                self._extractall_tar(tarf, temp_dir)
                 self.logger.info(f"Extracted {len(tarf.getmembers())} files. Processing them...")
 
                 # Process each file in the tar archive
@@ -127,7 +133,7 @@ class FileParser:
                 # For .tar.gz files
                 if file.filename.endswith(".tar.gz"):
                     with tarfile.open(fileobj=gzf) as tarf:
-                        tarf.extractall(path=temp_dir, filter="data")
+                        self._extractall_tar(tarf, temp_dir)
                         self.logger.info(f"Extracted {len(tarf.getmembers())} files. Processing them...")
 
                         for member in tarf.getmembers():

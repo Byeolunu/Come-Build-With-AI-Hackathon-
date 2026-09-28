@@ -16,7 +16,9 @@ def test_generate_embeddings_from_url_success(test_client):
 
         assert response.status_code == 200
         assert response.json() == {"statusOk": True}
-        mock_generate.assert_called_once_with(url, None)
+        mock_generate.assert_called_once_with(
+            url, None, metadata={"source_url": url, "source_type": "official_web", "support_types": []}
+        )
 
 
 def test_generate_embeddings_from_url_conflict(test_client):
@@ -52,7 +54,9 @@ def test_generate_embeddings_from_file(test_client, file_name, file_content, con
 
         assert response.status_code == 200
         assert response.json() == {"statusOk": True}
-        mock_generate_from_text.assert_called_once_with("Mock content")
+        mock_generate_from_text.assert_called_once_with(
+            "Mock content", metadata={"source_title": file_name, "source_type": "official_pdf", "support_types": []}
+        )
 
 
 def test_generate_embeddings_from_zip_file(test_client):
@@ -77,8 +81,12 @@ def test_generate_embeddings_from_zip_file(test_client):
         assert mock_extract_documents_from_file.call_count == 1
         assert mock_generate_from_text.call_count == 2
 
-        mock_generate_from_text.assert_any_call("This is a text file")
-        mock_generate_from_text.assert_any_call("This is a markdown file")
+        mock_generate_from_text.assert_any_call(
+            "This is a text file", metadata={"source_title": "zip_file.zip", "source_type": "official_pdf", "support_types": []}
+        )
+        mock_generate_from_text.assert_any_call(
+            "This is a markdown file", metadata={"source_title": "zip_file.zip", "source_type": "official_pdf", "support_types": []}
+        )
 
 
 @pytest.mark.parametrize(

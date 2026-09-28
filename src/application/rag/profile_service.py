@@ -8,7 +8,6 @@ from pymongo import MongoClient
 
 from src.application.rag.models import UserProfile
 
-
 # ---------------------------------------------------------------------------
 # Country detection helpers
 # ---------------------------------------------------------------------------
@@ -56,7 +55,7 @@ _CURRENCY_PATTERNS = [
 ]
 
 
-def extract_profile(message: str) -> UserProfile:
+def extract_profile(message: str) -> UserProfile:  # noqa: PLR0912, PLR0915
     """Extract high-confidence fields from a user message without inventing unknown values."""
     text = message.lower()
     profile = UserProfile()
@@ -206,8 +205,16 @@ def missing_questions(profile: UserProfile) -> list[str]:
         "personal.age": "How old are you? / Quel âge avez-vous ? / كم عمرك؟",
         "personal.country": "Which country are you located in? / Dans quel pays êtes-vous situé(e) ? / في أي بلد أنت موجود(ة)؟",
         "personal.region": "Which city or region are you in? / Dans quelle ville ou région êtes-vous ? / في أي مدينة أو منطقة أنت؟",
-        "financial_need.amount": "How much funding do you need, and in which currency? / De combien avez-vous besoin, et en quelle devise ? / كم المبلغ الذي تحتاجه وبأي عملة؟",
-        "constraints.cannot_take_debt": "Can you repay a loan, or do you only want grants and non-repayable support? / Pouvez-vous rembourser un prêt, ou souhaitez-vous uniquement des subventions ? / هل يمكنك سداد قرض، أم تريد دعماً غير قابل للسداد فقط؟",
+        "financial_need.amount": (
+            "How much funding do you need, and in which currency? / "
+            "De combien avez-vous besoin, et en quelle devise ? / "
+            "كم المبلغ الذي تحتاجه وبأي عملة؟"
+        ),
+        "constraints.cannot_take_debt": (
+            "Can you repay a loan, or do you only want grants and non-repayable support? / "
+            "Pouvez-vous rembourser un prêt, ou souhaitez-vous uniquement des subventions ? / "
+            "هل يمكنك سداد قرض، أم تريد دعماً غير قابل للسداد فقط؟"
+        ),
     }
     return [questions[field] for field in profile.missing_information if field in questions]
 

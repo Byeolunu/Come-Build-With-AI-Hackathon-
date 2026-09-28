@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from langchain_community.callbacks.manager import get_openai_callback
 from langchain_core.embeddings import Embeddings
@@ -8,8 +8,8 @@ from src.application.assistant.chains.assistant_chain import AssistantChain
 from src.application.assistant.chains.assistant_prompt import AssistantPromptBuilder, AssistantPromptTemplate
 from src.application.assistant.chains.combine_docs_chain import AggregateDocsChunksChain
 from src.application.assistant.chains.retriever_chain import RetrieverChain, RetrieverChainConfiguration
-from src.context import AppContext
 from src.application.rag.profile_service import ProfileRepository, extract_profile, merge_profiles, missing_questions
+from src.context import AppContext
 from src.infrastracture.embeddings_manager.embeddings_manager import EmbeddingsManager
 from src.infrastracture.llm_manager.llm_manager import LlmManager
 
@@ -19,7 +19,7 @@ class AssistantServiceChatCompletionResponse:
     response: str
     references: list[dict[str, str]]
     profile: dict | None = None
-    missing_questions: list[str] = None
+    missing_questions: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -134,7 +134,13 @@ class AssistantService:
             prompt_template=prompt_template,
         )
 
-    def chat_completion(self, query: str, chat_history: list[str], session_id: str | None = None, custom_template_variables: dict[str, str] = None) -> AssistantServiceChatCompletionResponse:
+    def chat_completion(
+        self,
+        query: str,
+        chat_history: list[str],
+        session_id: str | None = None,
+        custom_template_variables: dict[str, str] = None,
+    ) -> AssistantServiceChatCompletionResponse:
         """
         Chat completion using Assistant Chain
         """

@@ -155,7 +155,7 @@ def generate_embeddings_from_file_background_task(
     status_code=status.HTTP_200_OK,
     tags=["Embeddings"],
 )
-def generate_embeddings_from_file(
+def generate_embeddings_from_file(  # noqa: PLR0913
     request: Request,
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),

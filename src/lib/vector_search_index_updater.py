@@ -1,6 +1,6 @@
 from logging import Logger
-import certifi
 
+import certifi
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.operations import SearchIndexModel

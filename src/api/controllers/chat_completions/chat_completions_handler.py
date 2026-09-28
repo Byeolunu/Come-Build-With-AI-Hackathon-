@@ -53,5 +53,5 @@ def response_mapper(completion_response: AssistantServiceChatCompletionResponse)
         "message": message,
         "references": references,
         "profile": completion_response.profile,
-        "missing_questions": completion_response.missing_questions,
+        "missing_questions": completion_response.missing_questions or [],
     }

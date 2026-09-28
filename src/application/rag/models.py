@@ -39,7 +39,9 @@ class UserProfile(BaseModel):
     financial_need: dict[str, Any] = Field(default_factory=lambda: {"amount": None, "currency": None, "purpose": None})
     business: dict[str, Any] = Field(default_factory=lambda: {"existing": None, "has_business_plan": None, "has_business_registration": None})
     experience: dict[str, Any] = Field(default_factory=lambda: {"relevant_experience": None, "skills": []})
-    eligibility: dict[str, Any] = Field(default_factory=lambda: {"student": None, "low_income": None, "disability": None, "refugee": None, "rural_resident": None})
+    eligibility: dict[str, Any] = Field(
+        default_factory=lambda: {"student": None, "low_income": None, "disability": None, "refugee": None, "rural_resident": None}
+    )
     constraints: dict[str, Any] = Field(default_factory=lambda: {"cannot_take_debt": None, "other": []})
     missing_information: list[str] = Field(default_factory=list)
 

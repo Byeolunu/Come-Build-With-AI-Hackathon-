@@ -1,6 +1,6 @@
+import os
 import tkinter as tk
 from tkinter import scrolledtext
-import os
 
 import requests
 from dotenv import load_dotenv
@@ -50,7 +50,7 @@ class ChatApp:
         self.send_button = tk.Button(self.root, text="Send", command=self.send)
         self.send_button.grid(row=1, column=1, pady=10, sticky='s')
         self.send_button.config(width=20, height=2)
-        
+
     def _append_references(self, references):
         if(len(references) > 0):
             self.update_chat_history("References:")
