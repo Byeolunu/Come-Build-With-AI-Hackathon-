@@ -60,60 +60,76 @@ def extract_profile(message: str) -> UserProfile:  # noqa: PLR0912, PLR0915
     text = message.lower()
     profile = UserProfile()
 
+    # If the user appended their response to a suggested question, isolate their response
+    for q_marker in ("can you repay a loan", "pouvez-vous rembourser", "هل يمكنك سداد قرض", "how old are you", "quel âge avez-vous"):
+        if q_marker in text:
+            parts = re.split(r"[?؟]", text)
+            if len(parts) > 1 and parts[-1].strip():
+                # Keep original text for full inspection, but also check the answer portion
+                answer_portion = parts[-1].strip()
+                break
+    else:
+        answer_portion = text
+
     # Employment
     if any(w in text for w in ("unemployed", "sans emploi", "chômeur", "chômeuse", "عاطل", "بدون عمل")):
         profile.employment["status"] = "unemployed"
-    elif any(w in text for w in ("employed", "salarié", "employee", "موظف")):
+    elif any(w in text for w in ("employed", "salarié", "salarie", "employee", "موظف")):
         profile.employment["status"] = "employed"
-    elif any(w in text for w in ("student", "étudiant", "étudiante", "طالب", "طالبة")):
+    elif any(w in text for w in ("student", "étudiant", "étudiante", "etudiant", "etudiante", "طالب", "طالبة")):
         profile.employment["status"] = "student"
+        profile.eligibility["student"] = True
 
     # Business goal
-    if any(w in text for w in ("start", "ouvrir", "créer", "launch", "افتتاح", "بدء", "فتح")):
+    if any(w in text for w in ("start", "ouvrir", "créer", "creer", "launch", "افتتاح", "بدء", "فتح", "projet de")):
         profile.goal["type"] = "start_business"
-    elif any(w in text for w in ("expand", "grow", "développer", "agrandir", "توسيع")):
+    elif any(w in text for w in ("expand", "grow", "développer", "developper", "agrandir", "توسيع")):
         profile.goal["type"] = "grow_business"
     elif any(w in text for w in ("training", "formation", "تكوين", "تدريب")):
         profile.goal["type"] = "training"
 
-    # Sector detection (generic, not just bakery)
+    # Sector detection with word boundaries to avoid substring false positives (e.g. 'app' in 'opportunités')
     sectors = {
-        "food": ("bakery", "boulangerie", "restaurant", "food", "alimentaire", "café", "patisserie", "خباز", "مخبزة", "مطعم"),
-        "tech": ("tech", "software", "app", "it", "digital", "web", "startup", "تقنية"),
-        "retail": ("shop", "boutique", "commerce", "magasin", "متجر", "محل"),
-        "agriculture": ("farm", "agriculture", "ferme", "زراعة", "فلاحة"),
-        "handicraft": ("artisan", "craft", "artisanat", "handmade", "حرفي", "صناعة تقليدية"),
-        "transport": ("transport", "taxi", "logistique", "نقل"),
+        "food": [r"\bbakery\b", r"\bboulangerie\b", r"\brestaurant\b", r"\bfood\b", r"\balimentaire\b", r"\bcafé\b", r"\bcafe\b", r"\bpatisserie\b", r"\bخباز\b", r"\bمخبزة\b", r"\bمطعم\b"],
+        "tech": [r"\btech\b", r"\bsoftware\b", r"\bapplication\b", r"\bit\b", r"\bdigital\b", r"\bweb\b", r"\bstartup\b", r"\bتقنية\b"],
+        "retail": [r"\bshop\b", r"\bboutique\b", r"\bcommerce\b", r"\bmagasin\b", r"\bflower\b", r"\bflowers\b", r"\bfleur\b", r"\bfleurs\b", r"\bfleuriste\b", r"\bflorist\b", r"\bمتجر\b", r"\bمحل\b"],
+        "agriculture": [r"\bfarm\b", r"\bagriculture\b", r"\bferme\b", r"\bزراعة\b", r"\bفلاحة\b"],
+        "handicraft": [r"\bartisan\b", r"\bcraft\b", r"\bartisanat\b", r"\bhandmade\b", r"\bحرفي\b", r"\bصناعة تقليدية\b"],
+        "transport": [r"\btransport\b", r"\btaxi\b", r"\blogistique\b", r"\bنقل\b"],
     }
-    for sector, keywords in sectors.items():
-        if any(k in text for k in keywords):
+    for sector, patterns in sectors.items():
+        if any(re.search(pat, text) for pat in patterns):
             profile.goal["sector"] = sector
             break
 
     # Country detection
     for keyword, country_code in _COUNTRY_KEYWORDS.items():
-        if keyword in text:
+        if re.search(r"\b" + re.escape(keyword) + r"\b", text):
             profile.personal["country"] = country_code
             break
 
     # City/region detection (overrides country if more specific)
     for city_key, (city_display, region, country_code) in _CITY_TO_REGION.items():
-        if city_key in text:
+        if re.search(r"\b" + re.escape(city_key) + r"\b", text):
             profile.personal["city"] = city_display
             profile.personal["region"] = region
             profile.personal["country"] = country_code
             break
 
-    # Debt constraint
-    if any(w in text for w in (
-        "cannot take a loan", "can't take a loan", "no loan", "sans prêt", "sans emprunt",
-        "لا أستطيع الاقتراض", "don't want a loan", "not a loan", "pas de prêt",
-    )):
+    # Debt constraint detection (inspecting both full text and isolated answer portion)
+    grant_indicators = (
+        "subvention", "subventions", "grant", "grants", "non remboursable", "non-repayable",
+        "sans prêt", "sans pret", "pas de prêt", "pas de pret", "no loan", "cannot take a loan",
+        "don't want a loan", "منحة", "منح", "دعم غير قابل للسداد", "فقط منحة", "sans intérêt", "sans interet",
+    )
+    loan_indicators = (
+        "can repay", "accept a loan", "willing to repay", "j'accepte un prêt", "j'accepte un pret",
+        "je peux rembourser", "rembourser", "prêt d'honneur", "pret d'honneur", "crédit", "credit",
+        "أستطيع سداد", "ok with loan", "open to loan", "قرض", "avec remboursement",
+    )
+    if any(w in answer_portion for w in grant_indicators):
         profile.constraints["cannot_take_debt"] = True
-    elif any(w in text for w in (
-        "can repay", "accept a loan", "willing to repay", "j'accepte un prêt",
-        "je peux rembourser", "أستطيع سداد", "ok with loan", "open to loan",
-    )):
+    elif any(w in answer_portion for w in loan_indicators):
         profile.constraints["cannot_take_debt"] = False
 
     # Amount extraction (try multiple currencies)
@@ -124,6 +140,9 @@ def extract_profile(message: str) -> UserProfile:  # noqa: PLR0912, PLR0915
             if raw_amount:
                 profile.financial_need["amount"] = float(raw_amount)
                 profile.financial_need["currency"] = currency
+                # MAD / DH currency is specific to Morocco
+                if currency == "MAD" and not profile.personal.get("country"):
+                    profile.personal["country"] = "MA"
                 break
 
     # Age extraction
@@ -146,7 +165,7 @@ def extract_profile(message: str) -> UserProfile:  # noqa: PLR0912, PLR0915
                 break
 
     # Gender detection
-    if any(w in text for w in ("female", "woman", "femme", "امرأة", "أنثى", "بنت")):
+    if any(w in text for w in ("female", "woman", "femme", "امرأة", "أنثى", "بنت", "nouhaila", "étudiante", "etudiante")):
         profile.personal["gender"] = "female"
     elif any(w in text for w in ("male", "man", "homme", "رجل", "ذكر")):
         profile.personal["gender"] = "male"

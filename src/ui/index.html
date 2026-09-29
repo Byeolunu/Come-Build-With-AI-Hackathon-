@@ -855,19 +855,39 @@
 
         /* Context panel */
         .bot-context {
-            margin-top: 8px;
+            margin-top: 10px;
             background: var(--bg-white);
-            border: 2px solid var(--border-light);
+            border: 2px solid var(--border-dark);
             border-radius: var(--radius-sm);
-            padding: 10px;
-            font-size: 0.78rem;
+            padding: 12px;
+            font-size: 0.8rem;
             color: var(--text-secondary);
+            box-shadow: 2px 2px 0px var(--border-dark);
         }
 
-        .bot-context strong { color: var(--text-primary); display: block; margin-bottom: 4px; font-weight: 700; }
-        .bot-context ul { padding-left: 1rem; }
-        .bot-context a { color: #6366f1; text-decoration: none; font-weight: 600; }
+        .bot-context strong { color: var(--text-primary); display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.82rem; }
+        .bot-context ul { padding-left: 1.1rem; margin: 4px 0; }
+        .bot-context a { color: #4338ca; text-decoration: none; font-weight: 600; }
         .bot-context a:hover { text-decoration: underline; }
+        .bot-context .chips-container { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+        .bot-context .quick-chip {
+            background: var(--bg-cream);
+            border: 1.5px solid var(--border-dark);
+            color: var(--text-primary);
+            padding: 5px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 1px 1px 0px var(--border-dark);
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .bot-context .quick-chip:hover {
+            background: var(--amber-light);
+            transform: translate(1px, 1px);
+            box-shadow: 0 0 0;
+        }
 
         /* Chat Input */
         .chat-input {
@@ -1254,9 +1274,15 @@
     </footer>
 
     <script>
-        /* ─── Session ─── */
-        let sessionId = localStorage.getItem('civicpilot-session') || crypto.randomUUID();
-        localStorage.setItem('civicpilot-session', sessionId);
+        /* ─── Session & History ─── */
+        let sessionId = localStorage.getItem('civicpilot-session');
+        if (!sessionId) {
+            sessionId = (window.crypto && crypto.randomUUID)
+                ? crypto.randomUUID()
+                : 'session_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+            localStorage.setItem('civicpilot-session', sessionId);
+        }
+        let chatHistory = [];
 
         const $ = id => document.getElementById(id);
         const msgs = $('messages');
@@ -1327,6 +1353,12 @@
             query.focus();
         }
 
+        function sendQuick(t) {
+            query.value = t;
+            resize(query);
+            send();
+        }
+
         function scrollToBottom() {
             setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 50);
         }
@@ -1374,18 +1406,52 @@
             let html = '';
 
             if (data.missing_questions && data.missing_questions.length > 0) {
-                html += `<div class="bot-context"><strong>Missing Information:</strong><ul>`;
+                html += `<div class="bot-context"><strong>💡 Précisions pour affiner votre aide :</strong>`;
                 data.missing_questions.forEach(q => {
-                    html += `<li><a href="#" onclick="suggest('${q.replace(/'/g, "\\'")}'); return false;">${q}</a></li>`;
+                    const qLower = q.toLowerCase();
+                    html += `<div style="margin-bottom: 8px;">`;
+                    if (qLower.includes('repay a loan') || qLower.includes('rembourser un prêt')) {
+                        html += `<span>Préférence de financement :</span>
+                        <div class="chips-container">
+                            <button type="button" class="quick-chip" onclick="sendQuick('Je souhaite uniquement des subventions non remboursables')">🟢 Uniquement subventions</button>
+                            <button type="button" class="quick-chip" onclick="sendQuick('Je peux rembourser un prêt / crédit bancaire')">🔵 Prêt remboursable acceptable</button>
+                        </div>`;
+                    } else if (qLower.includes('city or region') || qLower.includes('ville ou région')) {
+                        html += `<span>Votre ville au Maroc :</span>
+                        <div class="chips-container">
+                            <button type="button" class="quick-chip" onclick="sendQuick('Je suis à Casablanca')">📍 Casablanca</button>
+                            <button type="button" class="quick-chip" onclick="sendQuick('Je suis à Rabat')">📍 Rabat</button>
+                            <button type="button" class="quick-chip" onclick="sendQuick('Je suis à Marrakech')">📍 Marrakech</button>
+                            <button type="button" class="quick-chip" onclick="sendQuick('Je suis à Tanger')">📍 Tanger</button>
+                            <button type="button" class="quick-chip" onclick="sendQuick('Je suis à Fès')">📍 Fès</button>
+                            <button type="button" class="quick-chip" onclick="sendQuick('Je suis à Agadir')">📍 Agadir</button>
+                        </div>`;
+                    } else if (qLower.includes('how old are you') || qLower.includes('quel âge')) {
+                        html += `<span>Votre tranche d'âge :</span>
+                        <div class="chips-container">
+                            <button type="button" class="quick-chip" onclick="sendQuick('J\\'ai entre 18 et 25 ans')">18–25 ans</button>
+                            <button type="button" class="quick-chip" onclick="sendQuick('J\\'ai entre 26 et 35 ans')">26–35 ans</button>
+                            <button type="button" class="quick-chip" onclick="sendQuick('J\\'ai plus de 35 ans')">35+ ans</button>
+                        </div>`;
+                    } else {
+                        const cleanQ = q.split(' / ')[1] || q.split(' / ')[0] || q;
+                        html += `<button type="button" class="quick-chip" onclick="suggest('${cleanQ.replace(/'/g, "\\'")}');">${cleanQ}</button>`;
+                    }
+                    html += `</div>`;
                 });
-                html += `</ul></div>`;
+                html += `</div>`;
             }
 
             if (data.references && data.references.length > 0) {
-                html += `<div class="bot-context"><strong>Sources:</strong><ul>`;
+                html += `<div class="bot-context"><strong>🔗 Sources officielles vérifiées :</strong><ul>`;
                 data.references.forEach(r => {
                     if (r.url) {
-                        html += `<li><a href="${r.url}" target="_blank">${new URL(r.url).hostname}</a></li>`;
+                        try {
+                            const domain = new URL(r.url).hostname;
+                            html += `<li><a href="${r.url}" target="_blank" rel="noopener">${domain}</a></li>`;
+                        } catch (e) {
+                            html += `<li><a href="${r.url}" target="_blank" rel="noopener">${r.url}</a></li>`;
+                        }
                     }
                 });
                 html += `</ul></div>`;
@@ -1409,7 +1475,7 @@
                 const res = await fetch('/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ session_id: sessionId, chat_query: t, chat_history: [] })
+                    body: JSON.stringify({ session_id: sessionId, chat_query: t, chat_history: chatHistory })
                 });
 
                 const data = await res.json();
@@ -1417,8 +1483,16 @@
 
                 if (!res.ok) throw Error(data.detail || 'Request failed');
 
-                const extraHTML = generateContextHTML(data);
                 const rawText = data.message || 'No response returned.';
+
+                // Maintain conversation history across turns
+                chatHistory.push(t);
+                chatHistory.push(rawText);
+                if (chatHistory.length > 12) {
+                    chatHistory = chatHistory.slice(-12);
+                }
+
+                const extraHTML = generateContextHTML(data);
                 // Parse markdown so **bold**, ### headers, and - bullets render properly
                 const renderedContent = marked.parse(rawText);
                 appendMessage(false, renderedContent, extraHTML);

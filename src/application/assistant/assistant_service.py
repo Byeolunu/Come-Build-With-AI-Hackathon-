@@ -144,8 +144,8 @@ class AssistantService:
         """
         Chat completion using Assistant Chain
         """
-        # Handle greetings — return a friendly, helpful intro without touching the RAG chain
-        if self._is_greeting(query):
+        # Handle standalone greetings on first message without touching the RAG chain
+        if not chat_history and self._is_greeting(query):
             return AssistantServiceChatCompletionResponse(
                 response=self._greeting_reply(query),
                 references=[],
@@ -163,13 +163,12 @@ class AssistantService:
                 missing_questions=[],
             )
 
-        profile = None
-        profile_questions = []
-        if session_id:
-            repository = ProfileRepository(self.app_context.env_vars.MONGODB_CLUSTER_URI)
-            profile = merge_profiles(repository.get(session_id), extract_profile(query))
-            repository.save(session_id, profile)
-            profile_questions = missing_questions(profile)
+        # Always maintain session and save profile in MongoDB
+        effective_session_id = session_id or "default_session"
+        repository = ProfileRepository(self.app_context.env_vars.MONGODB_CLUSTER_URI)
+        profile = merge_profiles(repository.get(effective_session_id), extract_profile(query))
+        repository.save(effective_session_id, profile)
+        profile_questions = missing_questions(profile)
 
         # Default country to Morocco since CivicPilot is primarily designed for Moroccan programs
         country = (profile.personal.get("country") if profile else None) or "Morocco"

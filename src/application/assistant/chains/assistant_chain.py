@@ -105,23 +105,25 @@ class AssistantChain(Chain):
         return chain_response
 
     def _process_chat_history(self, chat_history: list[str]) -> str:
-        memory = ConversationTokenBufferMemory(llm=self.llm, max_token_limit=self.chat_history_max_token_limit)
+        if not chat_history:
+            return ""
 
+        formatted_messages = []
         for i in range(0, len(chat_history) - 1, 2):
-            input_message = chat_history[i]
-            output_message = chat_history[i + 1]
+            user_msg = chat_history[i].strip()
+            ai_msg = chat_history[i + 1].strip()
+            if len(ai_msg) > 600:
+                ai_msg = ai_msg[:600] + "..."
+            formatted_messages.append(f"User: {user_msg}\nAssistant: {ai_msg}")
 
-            memory.save_context({"input": input_message}, {"output": output_message})
+        if not formatted_messages:
+            return ""
 
-        memory_values = memory.load_memory_variables({})
-
-        if len(memory_values.get("history")) > 0:
-            return f"""
-Referring to the previous conversation messages:
-
-{memory_values["history"]}
+        # Keep the most recent 5 conversation turns
+        recent_history = "\n\n".join(formatted_messages[-5:])
+        return f"""
+Previous conversation context:
+{recent_history}
 
 ---
 """
-
-        return ""
