@@ -1,4 +1,7 @@
+import traceback
+
 from fastapi import APIRouter, Request, status
+from fastapi.responses import JSONResponse
 
 from src.api.schemas.chat_completion_schemas import ChatCompletionInputSchema, ChatCompletionOutputSchema
 from src.application.assistant.assistant_service import AssistantService, AssistantServiceChatCompletionResponse
@@ -23,15 +26,23 @@ async def chat_completions(request: Request, chat: ChatCompletionInputSchema):
 
     request_context.logger.info("Chat completions request received")
 
-    assistant_service = AssistantService(app_context=request_context)
+    try:
+        assistant_service = AssistantService(app_context=request_context)
 
-    completion_response = assistant_service.chat_completion(
-        query=chat.chat_query, chat_history=chat.chat_history, session_id=chat.session_id
-    )
+        completion_response = assistant_service.chat_completion(
+            query=chat.chat_query, chat_history=chat.chat_history, session_id=chat.session_id
+        )
 
-    request_context.logger.info("Chat completions request completed")
+        request_context.logger.info("Chat completions request completed")
 
-    return response_mapper(completion_response)
+        return response_mapper(completion_response)
+    except Exception as exc:
+        request_context.logger.error(f"Chat completions request failed: {exc}")
+        request_context.logger.error(traceback.format_exc())
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"An error occurred while processing your request. Please try again."},
+        )
 
 
 def response_mapper(completion_response: AssistantServiceChatCompletionResponse):

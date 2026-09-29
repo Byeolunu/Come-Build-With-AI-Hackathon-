@@ -100,11 +100,24 @@ class RetrieverChain(Chain):
         return None
 
     def _extract_country_code(self, query: str) -> str | None:
-        """Extract country code from the enriched retrieval query."""
+        """Extract country code from query — supports 2-letter codes and full country names."""
         query_lower = query.lower()
 
-        # Try new format: "Funding support programs for MA ..."
-        for marker in ("programs for ", "programmes pour "):
+        # Direct name/code mapping
+        country_name_map = {
+            "morocco": "MA", "maroc": "MA", "المغرب": "MA",
+            "tunisia": "TN", "tunisie": "TN", "تونس": "TN",
+            "senegal": "SN", "sénégal": "SN",
+            "france": "FR",
+            "algeria": "DZ", "algérie": "DZ", "الجزائر": "DZ",
+            "ivory coast": "CI", "côte d'ivoire": "CI",
+        }
+        for name, code in country_name_map.items():
+            if name in query_lower:
+                return code
+
+        # Try prefix patterns: "programs for MA ...", "user country: MA"
+        for marker in ("programs for ", "programmes pour ", "user country:", "pays de l'utilisateur:"):
             idx = query_lower.find(marker)
             if idx != -1:
                 snippet = query_lower[idx + len(marker):].strip()
@@ -112,16 +125,8 @@ class RetrieverChain(Chain):
                 if len(candidate) == COUNTRY_CODE_LENGTH:
                     return candidate.upper()
 
-        # Try old format: "User country: MA."
-        for marker in ("user country:", "pays de l'utilisateur:"):
-            idx = query_lower.find(marker)
-            if idx != -1:
-                snippet = query_lower[idx + len(marker):].strip()
-                candidate = snippet.split()[0].rstrip(".,;")
-                if len(candidate) == COUNTRY_CODE_LENGTH:
-                    return candidate.upper()
-
-        return None
+        # Default to Morocco since CivicPilot is primarily tailored to Morocco
+        return "MA"
 
     def _build_fallback_query(self, query: str) -> str | None:
         """
@@ -203,13 +208,13 @@ class RetrieverChain(Chain):
         return country_docs + other_docs
 
     def _call(self, inputs: dict[str, Any], run_manager: CallbackManagerForChainRun | None = None) -> dict[str, Any]:
-        query = inputs[self.query_key]
+        retrieval_target = inputs.get("retrieval_query") or inputs[self.query_key]
         post_filter_pipeline = self._get_post_filter_pipeline()
         vector_search = self._setup_vector_search()
 
         # Primary retrieval
         result = vector_search.similarity_search(
-            query,
+            retrieval_target,
             k=self.configuration.max_number_of_results,
             additional={"similarity_score": True},
             post_filter_pipeline=post_filter_pipeline,
@@ -217,8 +222,8 @@ class RetrieverChain(Chain):
 
         # Profile-driven fallback: if profile signal is present and primary results
         # may not cover the user's local programs, run a generic country-level query.
-        country_code = self._extract_country_code(query)
-        fallback_query = self._build_fallback_query(query)
+        country_code = self._extract_country_code(retrieval_target)
+        fallback_query = self._build_fallback_query(retrieval_target)
         if fallback_query is not None:
             fallback_k = max(self.configuration.max_number_of_results, 4)
             fallback = vector_search.similarity_search(

@@ -98,7 +98,7 @@ class AssistantChain(Chain):
         )
 
         chain_response = chain.invoke(
-            input={self.query_key: query, self.chat_history_key: chat_history, **custom_prompt_variables},
+            input={**inputs, self.query_key: query, self.chat_history_key: chat_history, **custom_prompt_variables},
             config=None,
         )
 
